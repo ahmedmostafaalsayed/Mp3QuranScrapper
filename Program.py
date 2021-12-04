@@ -28,7 +28,6 @@ if len( readersHtml ) > 0:
 
 for readerHtml in readersHtml:
     i += 1      # Increment reader counter to show progress
-    print( '%d ' % i, end = ' ' )   # Print the reader number
     type = readerHtml.div["title"]  # عدد السور / أو القرآن كله
     reader = readerHtml.div.div.a.string    # اسم القارئ
     readerPage = baseURL + readerHtml.div.div.a["href"]     # صفحة القارئ
@@ -38,6 +37,7 @@ for readerHtml in readersHtml:
 #        print( streamReader.read().decode('utf-8'))
         soup = BeautifulSoup( streamReader.read(), 'html.parser')
         sorasHtml = soup.find_all( "div", { "class": "sora-item" } )
+        print( 'Reader %d ' % i, end = ' ' )   # Print the reader number
         print( "%s soras." % len( sorasHtml ) )
         
         for soraHtml in sorasHtml:
@@ -46,16 +46,15 @@ for readerHtml in readersHtml:
             soraName = soraHyperlinkItem.string  # اسم السورة
             soraURL = soraHyperlinkItem["href"] # رابط السورة
 
-        # Append data frame row
-        df = df.append( {
-            "الشيخ": reader,
-            "السور":  type,
-            "صفحة القارئ": readerPage,
-            'رقم السورة': soraNumber,
-            'اسم السورة': soraName,
-            'رابط السورة': soraURL
-            }, ignore_index = True )
+            # أضف السطر المناظر لهذه السورة
+            df = df.append( {
+                "الشيخ": reader,
+                "السور":  type,
+                "صفحة القارئ": readerPage,
+                'رقم السورة': soraNumber,
+                'اسم السورة': soraName,
+                'رابط السورة': baseURL + soraURL
+                }, ignore_index = True )
 
-output = r'Readers.csv'
-df.to_csv( output )
-
+output = r'Readers.xlsx'
+df.to_excel( output )
